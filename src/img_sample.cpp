@@ -2,18 +2,18 @@
 #include <opencv2/imgproc.hpp>
 
 using namespace cv;
-namespace image_sample {
+namespace image_data {
   
-  EdgeHistData::EdgeHistData(Mat &hist) {
-    edge_hist = hist.clone();
+  HistData::HistData(Mat &hist) {
+    this->hist = hist.clone();
   }
 
-  double EdgeHistData::compare(EdgeHistData* a, EdgeHistData* b) {
+  double HistData::compare(HistData *a, HistData *b) {
     return compareHist(a->Data(), b->Data(), HISTCMP_CHISQR);
   }
 
-  Mat EdgeHistData::Data() {
-    return edge_hist;
+  Mat HistData::Data() {
+    return hist;
   }
 
   ProcessingRegion::ProcessingRegion(Rect rect, Mat mat) {

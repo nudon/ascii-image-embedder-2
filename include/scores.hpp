@@ -3,74 +3,57 @@
 
 namespace scores {
   class ScoreGenerator;
-  class ScoreMatcher;
+  //class ScoreMatcher;
   class Embedder;
 }
 
 #include "opencv2/opencv.hpp"
 #include "options.hpp"
-#include "util.hpp"
-
+#include "img_sample.hpp"
+#include "match.hpp"
 namespace scores {
-  /*
-    Color scores are fairly standard, just go over pixels in region
-    and calculate averages
-    Optionall second pass over scores to produce relative albedo value
-    where 0 would be darkest value found
-    
-    Edge scores generally lots of values to desribe dominant directions 
-    of change in image.
-    
-    Both of these seem to be covered by opencv's concept of Histrograms
-    which compresses down an image into a distribution of values
-    Edges might be better off with something that preserves some spatial information...which would just be taking histrogram of sub-regions. 
-    also a way of taking multi-dimentional histograms which might be useful for edges...doesn't account for spatial distribution of edges but sums up general trends. 
-   */
-
-
-  //simple difference of guassian filter
-  void edge_filter_dog(bool keep_neg_edges,float sigma, int x_dim, int y_dim, cv::Mat &input, cv::Mat &output);
-  //computes and extracts individual x/y gradients into channels 0(x) and 1(y)
-  void gradient_extraction(options::AllOptions* opt, cv::Mat &input, cv::Mat &output);
   
-  class Scores {
+  /*
+    Temp spot for most of the driving code
+   */
+  void rework(options::AllOptions* opt);
+  
+  /*
+    Generates regions of interest in image
+    grid_regions covers whole image, except any excess that doesn't fit in cell dimensions
+   */
+  class RegionGenerator {
   public:
-    Scores();
-
-  private:
-    float color_scores;
-    float edge_scores;
+    static std::list<image_data::ProcessingRegion> grid_regions(cv::Mat &img, int width, int height);
   };
 
-
-  //given font/image, generate scores for each cell/glyph
-  class ScoreGenerator {
+  /*
+    Generates data/statistics from regions to be used as matching criteria
+    also holds some minor image processing functions
+   */
+  class DataGenerator {
   public:
-    ScoreGenerator(options::AllOptions* options) { opt = options; }
-    void generate_image_scores();
-    void generate_font_scores();
-    void generate_score_for_region(cv::Rect reg, cv::Mat& img);
+    static std::list<image_data::HistData> edge_histograms(cv::Mat &img, std::list<image_data::ProcessingRegion> &regions, options::AllOptions* opt);
   private:
-    options::AllOptions* opt = nullptr; 
+    static void edge_filter_dog(bool keep_neg_edges, float sigma, int x_dim, int y_dim, cv::Mat &input, cv::Mat &output);
+    static void gradient_extraction(cv::Mat &input, cv::Mat &output, options::AllOptions* opt);
+    static void hist_2D(cv::Mat &x_in, cv::Mat &y_in, cv::Mat &hist_out, int x_size, int y_size);
   };
 
-  //given scores, match themp based on weights
-  class ScoreMatcher {
-    ScoreMatcher(options::AllOptions* opt);
-    void match_scores();
-  };
-
-
-  //given matches, output to image
-  class Embedder {
-    Embedder(options::AllOptions* opt);
-    void embed();
+  /*
+    Holds information used for matching, and ideally a sort of factory for handling various options
+   */
+  class ImageData {
+  public:
+    ImageData(cv::Mat &img, options::AllOptions* opt);
+    std::list<image_data::ProcessingRegion>* get_regions();
+    std::list<image_data::HistData>* get_data();
   private:
-    options::AllOptions* opt = nullptr;
-    ScoreGenerator* score_gen = nullptr;
-    ScoreMatcher* score_match = nullptr;
+    cv::Mat src_img;
+    std::list<image_data::ProcessingRegion> region_list;
+    std::list<image_data::HistData> data_list;
   };
-
+  
 }
   
 #endif

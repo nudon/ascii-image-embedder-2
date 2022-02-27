@@ -16,7 +16,7 @@ namespace match {
   }
   
   template<class Data>
-  double Comparer<Data>::Compare(Data a, Data b) {
+  double Comparer<Data>::Compare(Data a,  Data b) {
     return compare(a,b);
   }
 
@@ -63,14 +63,20 @@ namespace match {
   }
 
   template<class D, class I>
+  double DataMatch<D,I>::compare(Entry *other) {
+    auto base_data = base->get_data();
+    auto other_data = other->get_data();
+    return comparer->Compare(base_data, other_data);
+  }
+
+  template<class D, class I>
   bool DataMatch<D,I>::better_match(Entry *other) {
     bool ret = false;
     if (!has_match()) {
       ret = true;
     }
     else {
-      //ah no acess Data in DME
-      ret = comparer->Compare(base->get_data(), other->get_data()) < match_score;
+      ret = compare(other) < match_score;
       if (!comparer->compares_as_distance()) {
 	ret = !ret;
       }
@@ -80,7 +86,7 @@ namespace match {
 
   template<class D, class I>
   void DataMatch<D,I>::set_match(Entry *other) {
-    double val = comparer->Compare(base->get_data(), other->get_data());
+    double val = compare(other);
     match_score = val; 
     match = other;
   }
@@ -92,19 +98,47 @@ namespace match {
   }
 
   template<class D, class I>
-  void DataMatch<D,I>::find_best_matches(MatchList &targets,EntryList &pool) {
-    for(Match &target : targets) {
-      for(Entry &entry : pool) {
-	if (target.better_match(&entry)) {
-	  target.set_match(&entry);
-	}
+  void DataMatch<D,I>::find_best_match(EntryList &pool) {
+    for(Entry &entry : pool) {
+      if (this->better_match(&entry)) {
+	this->set_match(&entry);
       }
     }
   }
-  
-  template<class D, class I>
-  void DataMatch<D,I>::find_best_match(EntryList &list) {
+
+  template<class D,class I>
+  auto ScoreMatcher<D,I>::build_entry_list(std::list< I> *i_list, std::list< D> *d_list) -> std::list<EntryT> {
+    bool done = false;
+    auto i_itr = i_list->begin();
+    auto d_itr = d_list->begin();
+    if (d_list->size() != i_list->size()) {
+      throw std::runtime_error("Lists are not of the same size");
+    }
+    std::list<EntryT> pair_list;
+    while(!done) {
+      if (i_itr == i_list->end()) {
+	done = true;
+      }
+      else {
+	I &i = *i_itr;
+	D &d = *d_itr;
+	pair_list.emplace_back(&d, &i);
+	i_itr++;
+	d_itr++;
+      }
+    }
+    return pair_list;
   }
+
+  template<class D,class I> 
+  auto ScoreMatcher<D,I>::build_match_list(std::list<EntryT> *entry_list, Comparer<D*> *comp) -> std::list<MatchT> {
+    std::list<typename ScoreMatcher<D,I>::MatchT> match_list;
+    for (auto &entry : *entry_list) {
+      match_list.emplace_back(&entry, comp);
+    }
+    return match_list;
+  }  
+  
 }
 
 #endif

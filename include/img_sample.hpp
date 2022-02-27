@@ -3,22 +3,21 @@
 
 #include <opencv2/imgproc.hpp>
 
-namespace image_sample {
-
-
-  class EdgeHistData {
+namespace image_data {
+  
+  class HistData {
   public:
-    EdgeHistData(cv::Mat &edge_hist);
-    static double compare(EdgeHistData* a, EdgeHistData* b);
+    HistData(cv::Mat &edge_hist);
+    static double compare(HistData *a, HistData *b);
     cv::Mat Data();
   private:
-    cv::Mat edge_hist;
+    cv::Mat hist;
   };
 
   class ProcessingRegion {
   public:
     ProcessingRegion(cv::Rect pr, cv::Mat mat);
-    cv::Rect get_region();
+    cv::Rect get_region(); 
     cv::Mat get_full_img();
     cv::Mat get_region_img();
   private:

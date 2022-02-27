@@ -25,7 +25,6 @@ set(MAIN
   )
 
 set(SRC
-  src/work.cpp
   src/scores.cpp
   src/img_sample.cpp
   src/match.cpp
