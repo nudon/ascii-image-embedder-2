@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.10)
 project(ascii2)
 
 set(CMAKE_BUILD_TYPE Debug)
-set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_FLAGS "-Wall -Wextra -O1")
 find_package(OpenCV REQUIRED)
@@ -39,9 +39,6 @@ set(HEADERS
   include/
   src/
   )
-
-message("Magick++ is " ${ImageMagick_Magick++_FOUND})
-message("Magick++ libs are " ${ImageMagick_LIBRARIES})
 
 #quickly fixes some ImageMagick warnings, alternative fix is here
 #https://stackoverflow.com/questions/38546196/how-can-i-determine-magickcore-quantum-depth-and-magickcore-hdri-enable-during-c
