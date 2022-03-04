@@ -13,7 +13,7 @@ find_package(Freetype REQUIRED)
 
 set(EXTERN_LIBS
   ${OpenCV_LIBS}
-  ${ImageMagick_Magick++_LIBRARIES}
+  ${ImageMagick_LIBRARIES}
   ${FREETYPE_LIBRARIES}
   )
 
@@ -32,12 +32,16 @@ set(SRC
   src/img_sample.cpp
   src/match.cpp
   src/font.cpp
+  src/options.cpp
   )
 
 set(HEADERS
   include/
   src/
   )
+
+message("Magick++ is " ${ImageMagick_Magick++_FOUND})
+message("Magick++ libs are " ${ImageMagick_LIBRARIES})
 
 #quickly fixes some ImageMagick warnings, alternative fix is here
 #https://stackoverflow.com/questions/38546196/how-can-i-determine-magickcore-quantum-depth-and-magickcore-hdri-enable-during-c

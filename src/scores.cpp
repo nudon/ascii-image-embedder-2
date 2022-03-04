@@ -12,47 +12,6 @@ using namespace image_data;
 using namespace match;
 namespace scores {
 
-  void rework(AllOptions* opt) {
-    EmbedOptions* emb = opt->embed_opt;
-    string img_path = ".." + emb->image_dir + emb->image_name;
-    string other_img_path = ".." + emb->image_dir + emb->other_image_name;
-    Mat img = imread(img_path, IMREAD_COLOR);
-    Mat other_img = imread(other_img_path, IMREAD_COLOR);
-
-    ImageData img_data(img, opt);
-    ImageData other_img_data(other_img, opt);
-
-    using MatcherType = DataMatch<HistData*, ProcessingRegion*>;
-    using ScorerType = ScoreMatcher<HistData, ProcessingRegion>;
-    using EntryType = MatcherType::Entry;
-    using MatchType = MatcherType::Match;
-
-    Comparer<HistData*> comp ( [](HistData* a, HistData* b) {
-      return HistData::compare(a,b);
-    }, true);
-    
-
-    //TODO: Have more of this managed by settings in options
-    list<EntryType> match_entries = ScorerType::build_entry_list(img_data.get_regions(), img_data.get_data());
-    list<EntryType> search_entries = ScorerType::build_entry_list(other_img_data.get_regions(), other_img_data.get_data());
-    list<MatchType> match_list = ScorerType::build_match_list(&match_entries, &comp);
-
-    for (MatchType &match : match_list) {
-      match.find_best_match(search_entries);
-      //break;
-      EntryType* a = match.get_base();
-      EntryType* b = match.get_match();
-      
-      Mat base_img = a->get_index()->get_region_img();
-      Mat match_img = b->get_index()->get_region_img();
-      imshow("base image", base_img);
-      waitKey();
-      imshow("matched image", match_img);
-      waitKey();
-    }
-    cout << "Rework done!" << endl;
-  }
-
   std::list<ProcessingRegion> RegionGenerator::grid_regions(cv::Mat &img, int width, int height) {
     int region_rows = floor((float)img.size().height / height);
     int region_cols = floor((float)img.size().width / width);

@@ -7,16 +7,11 @@ namespace scores {
   class Embedder;
 }
 
-#include "opencv2/opencv.hpp"
+#include <opencv2/opencv.hpp>
 #include "options.hpp"
 #include "img_sample.hpp"
 #include "match.hpp"
 namespace scores {
-  
-  /*
-    Temp spot for most of the driving code
-   */
-  void rework(options::AllOptions* opt);
   
   /*
     Generates regions of interest in image

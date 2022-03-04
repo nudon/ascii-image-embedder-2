@@ -14,43 +14,50 @@ namespace options {
 namespace options {
   class WeightOptions {
   public:
-    float edge_weight = 1;
-    float color_weight = 1;
+    WeightOptions();
+    float edge_weight;
+    float color_weight;
   };
-
 
   enum class EdgeMetric{Histogram};
   class ImageDataOptions {
   public:
-    EdgeMetric edge_metric = EdgeMetric::Histogram;
-    float gaussian_blur_sigma = 1;
-    int gaussian_blur_size = 7;
-    int grid_width = 100;
-    int grid_height = 200;
-    bool keep_negative_edges = true;
+    ImageDataOptions();
+    EdgeMetric edge_metric;
+    float gaussian_blur_sigma;
+    int gaussian_blur_size;
+    int grid_width;
+    int grid_height;
+    bool keep_negative_edges;
     
     enum cv::HistCompMethods hist_compare_method = cv::HISTCMP_CHISQR;
   };
 
   class EmbedOptions {
   public:
+    EmbedOptions();
     std::string other_image_name; //debug option specifying another image
     std::string image_name;
-    std::string image_dir = "/img_src/";
-
-    std::string font_name;
-    std::string font_dir;
+    std::string image_dir;
     std::string output_name;
     std::string output_dir;
+  };
 
+  class FontOptions {
+  public:
+    FontOptions();
+    std::string font_name;
+    std::string font_dir;
     int font_size;
   };
 
   class AllOptions {
   public:
-    WeightOptions* weight_opt;
-    EmbedOptions* embed_opt;
-    ImageDataOptions* image_data_opt;
+    //AllOptions();
+    WeightOptions* weight_opt = nullptr;
+    EmbedOptions* embed_opt = nullptr;
+    ImageDataOptions* image_data_opt = nullptr;
+    FontOptions* font_opt = nullptr;
   };
 
 }
